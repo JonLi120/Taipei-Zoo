@@ -36,17 +36,17 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun AppBarWidget(title: String) {
+fun AppBarWidget(title: MutableState<String>) {
     TopAppBar(
         title = {
-            Text(text = title)
+            Text(text = title.value)
         },
         elevation = 4.dp
     )
 }
 
 @Composable
-fun BottomNavigationWidget(navController: NavHostController) {
+fun BottomNavigationWidget(navController: NavHostController, appBarTitle: MutableState<String>) {
 
     val currentSelectedItem by navController.currentScreenAsState()
 
@@ -73,6 +73,7 @@ fun BottomNavigationWidget(navController: NavHostController) {
                             saveState = true
                         }
                     }
+                    appBarTitle.value = item.label
                 }
             )
         }
@@ -112,10 +113,11 @@ private fun NavController.currentScreenAsState(): State<Screen> {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val appBarTitle = remember { mutableStateOf(NavigationItems[0].label) }
 
     Scaffold(
-        topBar = { AppBarWidget("台北動物園") },
-        bottomBar = { BottomNavigationWidget(navController) }
+        topBar = { AppBarWidget(appBarTitle) },
+        bottomBar = { BottomNavigationWidget(navController, appBarTitle) }
     ) {
         AppNavigation(
             navController = navController,
